@@ -1,19 +1,21 @@
 {
-  "exclude": ["node_modules", "dist", "**/*.test.ts"],
-  "include": ["src/**/*.ts"],
   "compilerOptions": {
-    "types": ["node", "jest", "express"],
-    "target": "ESNext",
-    "module": "CommonJS",
-    "rootDir": "./src",
-    "moduleResolution": "Node",
-    "typeRoots": ["./node_modules/@types"],
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
     "sourceMap": true,
-    "outDir": "dist/",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "skipLibCheck": true
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false
   }
 }
