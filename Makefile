@@ -19,25 +19,25 @@ restart:
 	docker-compose logs -f app
 
 start:
-	npm run start
+	yarn start
 
 start-dev:
-	npm run start:dev
+	yarn start:dev
 
 start-prod:
-	npm run start:prod
+	yarn start:prod
 
 test:
-	npm run test
+	yarn test
 
 test-watch:
-	npm run test:watch
+	yarn test:watch
 
 test-e2e:
-	npm run test:e2e
+	yarn test:e2e
 
 lint:
-	npm run lint
+	yarn lint
 
 format:
-	npm run format
+	yarn format
