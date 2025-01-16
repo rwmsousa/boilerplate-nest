@@ -21,8 +21,11 @@ RUN npm install
 # Copia o restante dos arquivos do projeto
 COPY . .
 
+# Compila o projeto
+RUN npm run build
+
 # Expõe a porta da aplicação
 EXPOSE 3001
 
 # Comando para iniciar a aplicação
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start:prod"]
