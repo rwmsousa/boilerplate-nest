@@ -17,3 +17,27 @@ restart:
 	docker-compose down
 	docker-compose up -d --build
 	docker-compose logs -f app
+
+start:
+	npm run start
+
+start-dev:
+	npm run start:dev
+
+start-prod:
+	npm run start:prod
+
+test:
+	npm run test
+
+test-watch:
+	npm run test:watch
+
+test-e2e:
+	npm run test:e2e
+
+lint:
+	npm run lint
+
+format:
+	npm run format
