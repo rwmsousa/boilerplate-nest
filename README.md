@@ -55,7 +55,6 @@ The complete route documentation can be accessed via Swagger at `http://localhos
    ADMIN_API_KEY=
    JWT_SECRET=
    COMPANY_NAME=
-   DATABASE_TYPE=
    DATABASE_HOST=
    DATABASE_PORT=
    DATABASE_USER=
