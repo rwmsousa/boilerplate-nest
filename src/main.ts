@@ -11,13 +11,18 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  if (typeof process.env.DATABASE_PASSWORD !== 'string') {
+    throw new Error('DATABASE_PASSWORD must be a string');
+  }
+
   await AppDataSource.initialize();
   await AppDataSource.runMigrations();
   const seeder = app.get(SeederService);
   await seeder.seed();
 
   app.enableCors({
-    origin: [process.env.FRONTEND_URL],
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
     allowedHeaders: 'Content-Type, Authorization',
