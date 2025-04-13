@@ -60,7 +60,6 @@ The complete route documentation can be accessed via Swagger at `http://localhos
    DATABASE_USER=
    DATABASE_PASSWORD=
    DATABASE_NAME=
-   DATABASE_SCHEMA=
    DATABASE_LOGGING=
    DATABASE_SYNCHRONIZE=
    ```
