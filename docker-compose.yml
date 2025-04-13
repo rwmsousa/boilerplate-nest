@@ -1,64 +1,81 @@
 services:
-  db:
-    container_name: ${DATABASE_NAME}
-    image: postgres:15
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: always
     environment:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
     ports:
-      - '5434:5432'
+      - "${DATABASE_PORT}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    restart: always
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER}"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
 
   app:
     container_name: ${DOCKER_IMAGE_NAME}
     build:
       context: .
       dockerfile: Dockerfile
-    command: yarn start:prod
+    command: sh -c "if [ \"$$NODE_ENV\" = \"development\" ]; then yarn start:dev; else sleep 10 && yarn migration:revert && yarn migration:run && yarn start:prod; fi"
     environment:
       - NODE_ENV=${NODE_ENV}
       - PORT=${PORT}
-      - DATABASE_HOST=db
-      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
       - DATABASE_USER=${DATABASE_USER}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_NAME=${DATABASE_NAME}
-      - DATABASE_SCHEMA=${DATABASE_SCHEMA}
+      - DATABASE_SCHEMA=public
+      - DATABASE_SYNCHRONIZE=true
+      - DATABASE_LOGGING=true
+      - DATABASE_SSL=false
       - ADMIN_API_KEY=${ADMIN_API_KEY}
       - DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME}
+      - COMPANY_NAME=${COMPANY_NAME}
+      - JWT_SECRET=${JWT_SECRET}
     ports:
       - '3001:3001'
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
     volumes:
       - .:/app
       - /app/node_modules
-      - pgdata:/app/pgdata
     restart: always
+    networks:
+      - app-network
     logging:
       driver: "json-file"
       options:
         max-size: "200k"
         max-file: "10"
 
+networks:
+  app-network:
+    driver: bridge
+
 volumes:
-  pgdata:
+  postgres_data:
     driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${PWD}/pgdata
