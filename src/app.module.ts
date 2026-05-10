@@ -40,24 +40,33 @@ const shouldUseSsl = parseBoolean(process.env.DATABASE_SSL);
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      ...(databaseUrl
-        ? { url: databaseUrl }
+    TypeOrmModule.forRoot(
+      databaseUrl
+        ? {
+            type: 'postgres',
+            url: databaseUrl,
+            synchronize: shouldSynchronize,
+            schema: process.env.DATABASE_SCHEMA,
+            logging: shouldLogQueries,
+            ssl: shouldUseSsl ? { rejectUnauthorized: false } : false,
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            migrations: [__dirname + '/migrations/*{.ts,.js}'],
+          }
         : {
+            type: 'postgres',
             host: databaseHost,
             port: databasePort,
             database: process.env.DATABASE_NAME,
-          }),
-      username: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      synchronize: shouldSynchronize,
-      schema: process.env.DATABASE_SCHEMA,
-      logging: shouldLogQueries,
-      ssl: shouldUseSsl ? { rejectUnauthorized: false } : false,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      migrations: [__dirname + '/migrations/*{.ts,.js}'],
-    }),
+            username: process.env.DATABASE_USER,
+            password: process.env.DATABASE_PASSWORD,
+            synchronize: shouldSynchronize,
+            schema: process.env.DATABASE_SCHEMA,
+            logging: shouldLogQueries,
+            ssl: shouldUseSsl ? { rejectUnauthorized: false } : false,
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            migrations: [__dirname + '/migrations/*{.ts,.js}'],
+          },
+    ),
     ClientsModule,
     UserModule,
     SeederModule,
