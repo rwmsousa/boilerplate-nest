@@ -11,12 +11,12 @@ WORKDIR /app
 
 RUN mkdir -p /app/pgdata
 
-COPY package.json yarn.lock ./
+COPY package*.json ./
 
-RUN yarn install
+RUN npm ci
 
 COPY . .
 
 EXPOSE 3001
 
-CMD ["yarn", "start:prod"]
+CMD ["npm", "run", "start:prod"]
