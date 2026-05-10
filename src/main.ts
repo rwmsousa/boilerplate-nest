@@ -12,8 +12,18 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  if (typeof process.env.DATABASE_PASSWORD !== 'string') {
-    throw new Error('DATABASE_PASSWORD must be a string');
+  const hasDatabaseUrl =
+    typeof process.env.DATABASE_URL === 'string' &&
+    process.env.DATABASE_URL.length > 0;
+  const hasDatabaseConfig =
+    typeof process.env.DATABASE_HOST === 'string' &&
+    typeof process.env.DATABASE_USER === 'string' &&
+    typeof process.env.DATABASE_NAME === 'string';
+
+  if (!hasDatabaseUrl && !hasDatabaseConfig) {
+    throw new Error(
+      'Database configuration missing. Set DATABASE_URL or DATABASE_HOST/DATABASE_USER/DATABASE_NAME.',
+    );
   }
 
   await AppDataSource.initialize();
